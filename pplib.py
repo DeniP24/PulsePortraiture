@@ -29,9 +29,9 @@ import scipy.interpolate as si
 import scipy.optimize as opt
 import scipy.signal as ss
 try: import lmfit as lm
-except ImportError: print "No lmfit found.  You will not be able to use ppgauss.py or fit_powlaw()."
+except ImportError: print("No lmfit found.  You will not be able to use ppgauss.py or fit_powlaw().")
 try: import pywt as pw
-except ImportError: print "No pywt found.  You will not be able to use wavelet_smooth() and will have limited, no-smoothing functionality in ppspline.py."
+except ImportError: print("No pywt found.  You will not be able to use wavelet_smooth() and will have limited, no-smoothing functionality in ppspline.py.")
 import psrchive as pr
 import matplotlib.gridspec as gs
 import matplotlib.pyplot as plt
@@ -294,7 +294,7 @@ class DataPortrait(object):
                         self.join_params[ijoin*2] = phi
                         self.join_params[ijoin*2+1] = DM
                 except:
-                    print "Bad join file."
+                    print("Bad join file.")
             self.all_join_params = [self.join_ichanxs, self.join_params,
                     self.join_fit_flags]
             if len(self.datafiles) == 1:
@@ -361,7 +361,7 @@ class DataPortrait(object):
         NB: currently only works properly when nsub = 1.
         """
         if method not in ("mean", "max", "prof", "rms", "abs"):
-            print "Unknown method for normalize_portrait(...), '%s'."%method
+            print("Unknown method for normalize_portrait(...), '%s'."%method)
         else:
             if method == "prof":
                 weights = self.weights[0]
@@ -442,15 +442,15 @@ class DataPortrait(object):
         fp = fit_powlaw(self.flux_profx, np.array([guessA,guessalpha]),
             channel_errs, self.freqsxs[0], nu_ref)
         if not quiet:
-            print ""
-            print "Flux-density power-law fit"
-            print "----------------------------------"
-            print "residual mean = %.2f"%fp.residuals.mean()
-            print "residual std. = %.2f"%fp.residuals.std()
-            print "reduced chi-squared = %.2f"%(fp.chi2 / fp.dof)
-            print "A = %.3f +/- %.3f (flux at %.2f MHz)"%(fp.amp,
-                    fp.amp_err, fp.nu_ref)
-            print "alpha = %.3f +/- %.3f"%(fp.alpha, fp.alpha_err)
+            print("")
+            print("Flux-density power-law fit")
+            print("----------------------------------")
+            print("residual mean = %.2f"%fp.residuals.mean())
+            print("residual std. = %.2f"%fp.residuals.std())
+            print("reduced chi-squared = %.2f"%(fp.chi2 / fp.dof))
+            print("A = %.3f +/- %.3f (flux at %.2f MHz)"%(fp.amp,
+                    fp.amp_err, fp.nu_ref))
+            print("alpha = %.3f +/- %.3f"%(fp.alpha, fp.alpha_err))
         if plot or savefig:
             ax1 = plt.subplot(211, position=(0.1,0.1,0.8,0.4))
             ax2 = plt.subplot(212, position=(0.1,0.5,0.8,0.4))
@@ -499,8 +499,8 @@ class DataPortrait(object):
                  e.g.  df = archive.get_Integration(0).get_doppler_factor and
                       DM0 = archive.get_dispersion_measure().
         """
-        #print "Beware: JOIN Parameters should be negated!"
-        #print "Beware: JOIN DMs are offsets and not doppler corrected!"
+        #print("Beware: JOIN Parameters should be negated!"
+        #print("Beware: JOIN DMs are offsets and not doppler corrected!"
         if self.joinfile is not None:
             joinfile = self.joinfile
         else:
@@ -740,7 +740,7 @@ def get_red_chi2(data, model, errs=None, dof=None):
         if len(data.shape) == 1: errs = get_noise(data)
         elif len(data.shape) == 2: errs = get_noise(data, chans=True)
         else:
-            print "Can only handle 1- or 2-D input."
+            print("Can only handle 1- or 2-D input.")
     if dof is None: dof = sum(data.shape)
     if len(data.shape) == 1:
         red_chi2 = np.sum((resids/errs)**2.0) / dof
@@ -820,8 +820,8 @@ def gaussian_profile(nbin, loc, wid, norm=False, abs_wid=False, zeroout=True):
                 fact = np.exp(-0.5 * z**2.0) / retval[retval.argmax()]
                 return fact * retval
     except OverflowError:
-        print "Problem in gaussian_profile:  mean = %f  sigma = %f" %(mean,
-                sigma)
+        print("Problem in gaussian_profile:  mean = %f  sigma = %f" %(mean,
+                sigma))
         return np.zeros(nbin, 'd')
 
 def gen_gaussian_profile(params, nbin):
@@ -1515,7 +1515,7 @@ def pca(port, mean_prof=None, weights=None, quiet=False):
 
     nmes,ndim = port.shape #nchan x nbin
 
-    if not quiet: print "Performing principal component analysis on data with %d dimensions and %d measurements..." %(ndim,nmes)
+    if not quiet: print("Performing principal component analysis on data with %d dimensions and %d measurements..." %(ndim,nmes))
 
     if weights is None: weights = np.ones(len(port))
 
@@ -1603,7 +1603,7 @@ def find_significant_eigvec(eigvec, check_max=10, return_max=10,
                     add_eigvec = True
                 else:
                     add_eigvec = False
-                    print "Borderline case eigenvector %d failed test."%ivec
+                    print("Borderline case eigenvector %d failed test."%ivec)
             else:
                 add_eigvec = True
         if add_eigvec:
@@ -1890,7 +1890,7 @@ def fit_gaussian_profile(data, init_params, errs, fit_flags=None,
             params.add('amp%s'%str((ii-4)/3 + 1), init_params[ii],
                     vary=fit_flags[ii], min=0.0, max=None, expr=None)
         else:
-            print "Undefined index %d."%ii
+            print("Undefined index %d."%ii)
             return DataBunch()
     other_args = {'data':data, 'errs':errs}
     #Now fit it
@@ -1907,16 +1907,16 @@ def fit_gaussian_profile(data, init_params, errs, fit_flags=None,
     residuals = results.residual * errs
     #residuals = data - gen_gaussian_profile(fitted_params, len(data))
     if not quiet:
-        print "---------------------------------------------------------------"
-        print "Multi-Gaussian Profile Fit Results"
-        print "---------------------------------------------------------------"
-        print "lmfit status:", results.message
-        print "Gaussians:", ngauss
-        print "DoF:", dof
-        print "reduced chi-sq: %.2f" % red_chi2
-        print "residuals mean: %.3g" % np.mean(residuals)
-        print "residuals std.: %.3g" % np.std(residuals)
-        print "---------------------------------------------------------------"
+        print("---------------------------------------------------------------")
+        print("Multi-Gaussian Profile Fit Results")
+        print("---------------------------------------------------------------")
+        print("lmfit status:", results.message)
+        print("Gaussians:", ngauss)
+        print("DoF:", dof)
+        print("reduced chi-sq: %.2f" % red_chi2)
+        print("residuals mean: %.3g" % np.mean(residuals))
+        print("residuals std.: %.3g" % np.std(residuals))
+        print("---------------------------------------------------------------")
     results = DataBunch(fitted_params=fitted_params, fit_errs=fit_errs,
             residuals=residuals, chi2=chi2, dof=dof)
     return results
@@ -1987,7 +1987,7 @@ def fit_gaussian_portrait(model_code, data, init_params, scattering_index,
             params.add('alpha%s'%str((ii-7)/6 + 1), init_params[ii],
                     vary=bool(fit_flags[ii]), min=None, max=None, expr=None)
         else:
-            print "Undefined index %d."%ii
+            print("Undefined index %d."%ii)
             return DataBunch()
     if len(join_params):
         join_ichans = join_params[0]
@@ -2035,17 +2035,17 @@ def fit_gaussian_portrait(model_code, data, init_params, scattering_index,
     #The lmfit residuals are scaled by errs (in my fit function).
     residuals = results.residual.reshape(errs.shape) * errs
     if not quiet:
-        print "---------------------------------------------------------------"
-        print "Gaussian Portrait Fit"
-        print "---------------------------------------------------------------"
-        print "lmfit status:", results.message
-        print "Gaussians:", ngauss
-        print "DoF:", dof
-        print "reduced chi-sq: %.2g" %red_chi2
-        print "residuals mean: %.3g" %np.mean(residuals)
-        print "residuals std.: %.3g" %np.std(residuals)
-        print "data std.: %.3g" %get_noise(data)
-        print "---------------------------------------------------------------"
+        print("---------------------------------------------------------------")
+        print("Gaussian Portrait Fit")
+        print("---------------------------------------------------------------")
+        print("lmfit status:", results.message)
+        print("Gaussians:", ngauss)
+        print("DoF:", dof)
+        print("reduced chi-sq: %.2g" %red_chi2)
+        print("residuals mean: %.3g" %np.mean(residuals))
+        print("residuals std.: %.3g" %np.std(residuals))
+        print("data std.: %.3g" %get_noise(data))
+        print("---------------------------------------------------------------")
     results = DataBunch(lm_results=results, fitted_params=fitted_params,
             fit_errs=fit_errs, scattering_index=scattering_index,
             scattering_index_err=scattering_index_err, chi2=chi2, dof=dof)
@@ -2221,7 +2221,7 @@ def get_noise(data, method=default_noise_method, **kwargs):
     elif method == "fit":
         return get_noise_fit(data, **kwargs)
     else:
-        print "Unknown get_noise method."
+        print("Unknown get_noise method.")
         return 0
 
 def get_noise_PS(data, frac=4, chans=False):
@@ -2388,12 +2388,12 @@ def rotate_data(data, phase=0.0, DM=0.0, Ps=None, freqs=None, nu_ref=np.inf):
         harmind = np.arange(nharm)
         D = Dconst * DM / (np.ones(nsub)*Ps)
         if len(D) != nsub:
-            print "Wrong shape for array of periods."
+            print("Wrong shape for array of periods.")
             return 0
         try:
             test = float(nu_ref)
         except TypeError:
-            print "Only one nu_ref permitted."
+            print("Only one nu_ref permitted.")
             return 0
         if not hasattr(freqs, 'ndim'):
             freqs = np.ones(nchan)*freqs
@@ -2401,14 +2401,14 @@ def rotate_data(data, phase=0.0, DM=0.0, Ps=None, freqs=None, nu_ref=np.inf):
             freqs = np.ones(nchan)*float(freqs)
         if freqs.ndim == 1:
             if nchan != len(freqs):
-                print "Wrong number of frequencies."
+                print("Wrong number of frequencies.")
                 return 0
             fterm = np.tile(freqs, nsub).reshape(nsub, nchan)**-2.0 - \
                     nu_ref**-2.0
         else:
             fterm = freqs**-2.0 - nu_ref**-2.0
         if fterm.shape[1] != nchan or fterm.shape[0] != nsub:
-            print "Wrong shape for frequency array."
+            print("Wrong shape for frequency array.")
             return 0
         phase += np.array([D[isub]*fterm[isub] for isub in range(nsub)])
         phase = np.einsum('ij,k', phase, harmind)
@@ -2422,7 +2422,7 @@ def rotate_data(data, phase=0.0, DM=0.0, Ps=None, freqs=None, nu_ref=np.inf):
         elif ndim == 4:
             return fft.irfft(dFFT, axis=baxis)
         else:
-            print "Wrong number of dimensions."
+            print("Wrong number of dimensions.")
             return 0
 
 def rotate_portrait(port, phase=0.0, DM=None, P=None, freqs=None,
@@ -2476,7 +2476,7 @@ def normalize_portrait(port, method='rms', weights=None, return_norms=False):
     return_norms=True returns an array of the normalization values.
     """
     if method not in ("mean", "max", "prof", "rms", "abs"):
-        print "Unknown method for normalize_portrait(...), '%s'."%method
+        print("Unknown method for normalize_portrait(...), '%s'."%method)
     else:
         norm_port = np.zeros(port.shape)
         norm_vals = np.ones(len(port))
@@ -2669,7 +2669,7 @@ def load_data(filename, state=None, dedisperse=False, dededisperse=False,
     arch = pr.Archive_load(filename)
     source = arch.get_source()
     if not quiet:
-        print "\nReading data from %s on source %s..."%(filename, source)
+        print("\nReading data from %s on source %s..."%(filename, source))
     #Basic info used in TOA output
     telescope = arch.get_telescope()
     try: telescope_code = telescope_code_dict[telescope.upper()][0]
@@ -2786,7 +2786,7 @@ def load_data(filename, state=None, dedisperse=False, dededisperse=False,
     nsubx = len(ok_isubs)
     if not quiet:
         P = arch.get_Integration(0).get_folding_period()*1000.0
-        print "\tP [ms]             = %.3f\n\
+        print("\tP [ms] = %.3f\n\
         DM [cm**-3 pc]     = %.6f\n\
         center freq. [MHz] = %.4f\n\
         bandwidth [MHz]    = %.1f\n\
@@ -2796,7 +2796,7 @@ def load_data(filename, state=None, dedisperse=False, dededisperse=False,
         # subints          = %d\n\
         # unzapped subint  = %d\n\
         pol'n state        = %s\n"%(P, DM, nu0, bw, nbin, nchan, nchanx, nsub,
-                nsubx, state)
+                nsubx, state))
     if refresh_arch: arch.refresh()
     if not return_arch: arch = None
     #Return getitem/attribute-accessible class!
@@ -2862,7 +2862,7 @@ def write_model(filename, name, model_code, nu_ref, model_params, fit_flags,
         line = (igauss + 1, ) + tuple(np.array(zip(comp, fit_comp)).ravel())
         outfile.write("COMP%02d % .8f %d  % .8f %d  % .8f %d  % .8f %d  % .8f %d  % .8f %d\n"%line)
     outfile.close()
-    if not quiet: print "%s written."%filename
+    if not quiet: print("%s written."%filename)
 
 def read_model(modelfile, phases=None, freqs=None, P=None, quiet=False):
     """
@@ -2887,7 +2887,7 @@ def read_model(modelfile, phases=None, freqs=None, P=None, quiet=False):
     ngauss = 0
     comps = []
     if not quiet:
-        print "Reading model from %s..."%modelfile
+        print("Reading model from %s..."%modelfile)
     modeldata = open(modelfile, "r").readlines()
     for line in modeldata:
         info = line.split()
@@ -2930,21 +2930,21 @@ def read_model(modelfile, phases=None, freqs=None, P=None, quiet=False):
         nchan = len(freqs)
         if params[1] != 0:
             if P is None:
-                print "Need period P for non-zero scattering value TAU."
+                print("Need period P for non-zero scattering value TAU.")
                 return 0
             else:
                 params[1] *= nbin / P
         model = gen_gaussian_portrait(model_code, params, alpha, phases, freqs,
                 nu_ref)
     if not quiet and not read_only:
-        print "Model Name: %s"%modelname
-        print "Made %d component model with %d profile bins,"%(ngauss, nbin)
+        print("Model Name: %s"%modelname)
+        print("Made %d component model with %d profile bins,"%(ngauss, nbin))
         if len(freqs) != 1:
             bw = (freqs[-1] - freqs[0]) + ((freqs[-1] - freqs[-2]))
         else:
             bw = 0.0
-        print "%d frequency channels, ~%.0f MHz bandwidth, centered near ~%.0f MHz,"%(nchan, abs(bw), freqs.mean())
-        print "with model parameters referenced at %.3f MHz."%nu_ref
+        print("%d frequency channels, ~%.0f MHz bandwidth, centered near ~%.0f MHz,"%(nchan, abs(bw), freqs.mean()))
+        print("with model parameters referenced at %.3f MHz."%nu_ref)
     #This could be changed to a DataBunch
     if read_only:
         return (modelname, model_code, nu_ref, ngauss, params, fit_flags,
@@ -2977,7 +2977,7 @@ def read_spline_model(modelfile, freqs=None, nbin=None, quiet=False):
     else:
         read_only = False
     if not quiet:
-        print "Reading model from %s..."%modelfile
+        print("Reading model from %s..."%modelfile)
     modelname, source, datafile, mean_prof, eigvec, tck = \
             pickle.load(open(modelfile, 'rb'))
     if read_only:
@@ -3006,7 +3006,7 @@ def get_spline_model_coords(modelfile, nfreq=1000, lo_freq=None, hi_freq=None,
     proj_port = np.array(si.splev(model_freqs, tck, der=0, ext=0)).T
     if write_pick:
         outfile = modelfile + "_coords.pick"
-        print "Unloading %s..."%outfile
+        print("Unloading %s..."%outfile)
         of = open(outfile, 'wb')
         pickle.dump([model_freqs, proj_port], of, protocol=2)
         of.close()
@@ -3066,7 +3066,7 @@ def unload_new_archive(data, arch, outfile, DM=None, dmc=0, weights=None,
                 if weights is not None:
                     sub.set_weight(ichan, float(weights[isub,ichan]))
     arch.unload(outfile)
-    if not quiet: print "\nUnloaded %s.\n"%outfile
+    if not quiet: print("\nUnloaded %s.\n"%outfile)
 
 def write_archive(data, ephemeris, freqs, nu0=None, bw=None,
         outfile="pparchive.fits", tsub=1.0, start_MJD=None, weights=None,
@@ -3178,7 +3178,7 @@ def write_archive(data, ephemeris, freqs, nu0=None, bw=None,
         isub += 1
     if not dedispersed: arch.dededisperse()
     arch.unload(outfile)
-    if not quiet: print "\nUnloaded %s.\n"%outfile
+    if not quiet: print("\nUnloaded %s.\n"%outfile)
 
 def make_fake_pulsar(modelfile, ephemeris, outfile="fake_pulsar.fits", nsub=1,
         npol=1, nchan=512, nbin=2048, nu0=1500.0, bw=800.0, tsub=300.0,
@@ -3244,14 +3244,14 @@ def make_fake_pulsar(modelfile, ephemeris, outfile="fake_pulsar.fits", nsub=1,
     #Channel noise
     try:
         if len(noise_stds) != nchan:
-            print "\nlen(noise_stds) != nchan\n"
+            print("\nlen(noise_stds) != nchan\n")
             return 0
     except TypeError:
         noise_stds = noise_stds * np.ones(nchan)
     #Channel amplitudes
     try:
         if len(scales) != nchan:
-            print "\nlen(scales) != nchan\n"
+            print("\nlen(scales) != nchan\n")
             return 0
     except TypeError:
         scales = scales * np.ones(nchan)
@@ -3375,7 +3375,7 @@ def make_fake_pulsar(modelfile, ephemeris, outfile="fake_pulsar.fits", nsub=1,
     if dedispersed: arch.dedisperse()
     else: arch.dededisperse()
     arch.unload(outfile)
-    if not quiet: print "\nUnloaded %s.\n"%outfile
+    if not quiet: print("\nUnloaded %s.\n"%outfile)
 
 def filter_TOAs(TOAs, flag, cutoff, criterion=">=", pass_unflagged=False,
         return_culled=False):
@@ -3437,10 +3437,10 @@ def write_princeton_TOA(TOA_MJDi, TOA_MJDf, TOA_err, nu_ref, dDM, obs='@',
     #Splice together the fractional and integer MJDs
     TOA = "%5d"%int(TOA_MJDi) + ("%.13f"%TOA_MJDf)[1:]
     #if dDM != 0.0:
-    print obs + " %13s %8.3f %s %8.3f              %9.5f"%(name, nu_ref, TOA,
-            TOA_err, dDM)
+    print(obs + " %13s %8.3f %s %8.3f              %9.5f"%(name, nu_ref, TOA,
+            TOA_err, dDM))
     #else:
-    #    print obs + " %13s %8.3f %s %8.3f"%(name, nu_ref, TOA, TOA_err)
+    #    print(obs + " %13s %8.3f %s %8.3f"%(name, nu_ref, TOA, TOA_err)
 
 def write_TOAs(TOAs, inf_is_zero=True, SNR_cutoff=0.0, outfile=None,
         append=True):
@@ -3452,7 +3452,7 @@ def write_TOAs(TOAs, inf_is_zero=True, SNR_cutoff=0.0, outfile=None,
     TOAs is a single TOA of the TOA class from pptoas, or a list of them.
     SNR_cutoff is a value specifying which TOAs are written based on the snr
         flag
-    outfile is the output file name; if None, will print to standard output.
+    outfile is the output file name; if None, will print(to standard output.
     append=False will overwrite a file with the same name as outfile.
     """
     if not hasattr(TOAs, "__len__"): toas = [TOAs]
@@ -3499,7 +3499,7 @@ def write_TOAs(TOAs, inf_is_zero=True, SNR_cutoff=0.0, outfile=None,
             toa_string += "\n"
             of.write(toa_string)
         else:
-            print toa_string
+            print(toa_string)
     if outfile is not None: of.close()
 
 def show_portrait(port, phases=None, freqs=None, title=None, prof=True,
@@ -3848,7 +3848,7 @@ def show_spline_curve_projections(projected_port, tck, freqs, weights=None,
     if icoord is not None:
         ncoord = 1
         if icoord < 0 or icoord > nbin-1:
-            print "0 <= icoord <= projected_port.shape[1] - 1 = %d"%(nbin-1)
+            print("0 <= icoord <= projected_port.shape[1] - 1 = %d"%(nbin-1))
             return 0
         else:
             plot_this_coord = icoord
@@ -3856,7 +3856,7 @@ def show_spline_curve_projections(projected_port, tck, freqs, weights=None,
         if ncoord is None:
             ncoord = nbin
         elif ncoord < 1 or ncoord > nbin:
-            print "1 <= ncoord <= projected_port.shape[1] = %d"%nbin
+            print("1 <= ncoord <= projected_port.shape[1] = %d"%nbin)
             return 0
         else: pass
         if ncoord == 1: plot_this_coord = 0
@@ -4009,7 +4009,7 @@ def show_eigenprofiles(eigprofs=None, smooth_eigprofs=None, mean_prof=None,
             se = smooth_eigprofs[ie]
             ev_noise = get_noise(ev) * np.sqrt(len(ev) / 2.0)
             ev_snrs[ie] = np.sum(np.abs(np.fft.rfft(se)[1:])**2) / ev_noise
-            #print "ev_snr", ev_snrs[ie]
+            #print("ev_snr", ev_snrs[ie]
     for iax,ax in enumerate(axes):
         if plot_mean and iax == 0:
             phases = get_bin_centers(mean_prof.shape[0])

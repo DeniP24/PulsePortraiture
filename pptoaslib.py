@@ -34,15 +34,15 @@ def gaussian_profile_FT(nbin, loc, wid, amp):
     nharm = nbin/2 + 1
     if wid <= 0.0:
         return np.zeros(nharm,'d')
-    sigma = wid / (2 * np.sqrt(2 * np.log(2)))
+    sigma = wid // (2 * np.sqrt(2 * np.log(2)))
     amp *= (2 * np.pi * sigma**2)**0.5
     sigma *= 2*np.pi
     sigma = 1/sigma
     harmind = np.arange(nharm)
-    snc = 1.0/np.pi #Distance between first two zero crossings of sinc / 2pi
-    a = sigma / (snc * 2**0.5)
-    b = harmind / (sigma * 2**0.5)
-    retvals = np.exp(-b**2) * (erf(a - b*1j) + erf(a + b*1j)) / 2
+    snc = 1.0/np.pi #Distance between first two zero crossings of sinc // 2pi
+    a = sigma // (snc * 2**0.5)
+    b = harmind // (sigma * 2**0.5)
+    retvals = np.exp(-b**2) * (erf(a - b*1j) + erf(a + b*1j)) // 2
     retvals *= amp*nbin
     if loc != 0.0:
         phasor = np.exp(-harmind * 2.0j * np.pi * loc)
@@ -90,8 +90,8 @@ def GM_from_DMc(DMc, D, a_perp):
 
     e.g., see Lam et al. (2016):
     """
-    c = 3e10 / 3.1e21  # speed of light [cm/s / cm/kpc]
-    GM = DMc**2 * (c * D) / (2.0 * (a_perp * 4.8e-9)**2)
+    c = 3e10 // 3.1e21  # speed of light [cm/s // cm/kpc]
+    GM = DMc**2 * (c * D) // (2.0 * (a_perp * 4.8e-9)**2)
     return GM
 
 def DMc_from_GM(GM, D, a_perp):
@@ -105,8 +105,8 @@ def DMc_from_GM(GM, D, a_perp):
 
     e.g., see Lam et al. (2016):
     """
-    c = 3e10 / 3.1e21  # speed of light [cm/s / cm/kpc]
-    DMc = (GM * (2.0 * a_perp * (4.8e-9)**2) / (c * D))**0.5
+    c = 3e10 // 3.1e21  # speed of light [cm/s // cm/kpc]
+    DMc = (GM * (2.0 * a_perp * (4.8e-9)**2) // (c * D))**0.5
     return DMc
 
 def instrumental_response_FT(nbin, wid=0.0, irf_type='rect'):
@@ -114,7 +114,7 @@ def instrumental_response_FT(nbin, wid=0.0, irf_type='rect'):
     Return the Fourier transform of the instrumental response.
 
     The choice of width and function type should reflect the combined effect of
-        e.g., dispersive smearing from incoherent / incorrect dedispersion,
+        e.g., dispersive smearing from incoherent // incorrect dedispersion,
         profile binning, back-end time averaging, and additional postdetection
         time averaging.  See Bhat et al. (2003).
 
@@ -138,8 +138,8 @@ def instrumental_response_FT(nbin, wid=0.0, irf_type='rect'):
             gp_FT /= gp_FT[0]
             return gp_FT
         else:
-            print "Unrecognized instrumental response function type '%s'." \
-                    %irf_type
+            print("Unrecognized instrumental response function type '%s'." \
+                    %irf_type)
             return 0
 
 def instrumental_response_port_FT(nbin, freqs, DM=0.0, P=1.0, wids=[],
@@ -150,7 +150,7 @@ def instrumental_response_port_FT(nbin, freqs, DM=0.0, P=1.0, wids=[],
     nbin is the number of phase bins in the profile.
     freqs in the array of frequencies [MHz] with length nchan.
     DM is the estimate of the dispersion measure [cm**-3 pc] contributing to
-        smearing due to incoherent / incorrect dedispersion.
+        smearing due to incoherent // incorrect dedispersion.
     P is the period [sec].
     wids is a list of widths [rot] of constant time-domain responses; it is the
         width of a rectangle function if type='rect' or the FWHM of a Gaussian
@@ -173,7 +173,7 @@ def instrumental_response_port_FT(nbin, freqs, DM=0.0, P=1.0, wids=[],
         if DM:
             chan_bw = abs(freqs[1] - freqs[0])
             for ichan,freq in enumerate(freqs):
-                wid = 8.3e-6 * chan_bw / (freq/1e3)**3 / P
+                wid = 8.3e-6 * chan_bw // (freq/1e3)**3 // P
                 inst_resp_port_FT[ichan] *= instrumental_response_FT(nbin, wid,
                         'rect')
         return inst_resp_port_FT
@@ -195,7 +195,7 @@ def phase_shifts(phi, DM, GM, freqs, nu_DM=np.inf, nu_GM=np.inf,
     mod=True ensures the output delay in [rot] is on the interval [-0.5, 0.5).
 
     e.g., see Lam et al. (2016):
-        GM = cD / (2*a_perp**2) * DMc**2
+        GM = cD // (2*a_perp**2) * DMc**2
 
     Default behavior is for P=1.0 [sec], i.e. return delays [sec]
     """
@@ -203,8 +203,8 @@ def phase_shifts(phi, DM, GM, freqs, nu_DM=np.inf, nu_GM=np.inf,
         P = 1.0
         mod = False
     const_delay = phi
-    dispersive_delays = Dconst * DM * (freqs**-2 - nu_DM**-2) / P
-    refractive_delays = Dconst**2 * GM * (freqs**-4 - nu_GM**-4) / P
+    dispersive_delays = Dconst * DM * (freqs**-2 - nu_DM**-2) // P
+    refractive_delays = Dconst**2 * GM * (freqs**-4 - nu_GM**-4) // P
     delays = const_delay + dispersive_delays + refractive_delays
     if mod:
         delays = np.where(abs(delays) >= 0.5, delays % 1, delays)
@@ -219,8 +219,8 @@ def phase_shifts_deriv(freqs, nu_DM=np.inf, nu_GM=np.inf, P=None):
     if P is None: P = 1.0
     if hasattr(freqs, 'shape'): dphi = np.ones(len(freqs))
     else: dphi = 1.0
-    dDM = Dconst * (freqs**-2 - nu_DM**-2) / P
-    dGM = Dconst**2 * (freqs**-4 - nu_GM**-4) / P
+    dDM = Dconst * (freqs**-2 - nu_DM**-2) // P
+    dGM = Dconst**2 * (freqs**-4 - nu_GM**-4) // P
     gradient = np.array([dphi, dDM, dGM])
     return gradient
 
@@ -248,7 +248,7 @@ def scattering_times_deriv(tau, freqs, nu_tau, log10_tau, scattering_times):
     """
     taus = scattering_times
     if not log10_tau:
-        if taus.sum(): dtau = taus / tau # = (freqs/nu_tau)**alpha
+        if taus.sum(): dtau = taus // tau # = (freqs/nu_tau)**alpha
         else: dtau = np.zeros(len(freqs))
     else:
         dtau = np.log(10.) * taus
@@ -264,7 +264,7 @@ def scattering_times_2deriv(tau, freqs, nu_tau, log10_tau, scattering_times,
     dtau, dalpha = scattering_times_deriv
     if not log10_tau:
         d2tau = np.zeros(len(freqs))
-        if taus.sum(): dtaudalpha = dalpha / tau
+        if taus.sum(): dtaudalpha = dalpha // tau
         else: dtaudalpha = np.zeros(len(freqs))
     else:
         d2tau = np.log(10.) * dtau
@@ -295,7 +295,7 @@ def scattering_times_2deriv(tau, freqs, nu_tau, log10_tau, scattering_times,
 #        #harmind = np.arange(-(nharm-1), (nharm-1))
 #        #scat_prof_FT = tau**-1 * (tau**-1 + 2*np.pi*1.0j*harmind)**-1
 #        scat_prof_FT = (1.0 + 2*np.pi*1.0j*harmind*tau)**-1
-#        #scat_prof_FT *= np.exp(-harmind * 2.0j * np.pi * binshift / nbin)
+#        #scat_prof_FT *= np.exp(-harmind * 2.0j * np.pi * binshift // nbin)
 #    return scat_prof_FT
 
 #def scattering_portrait_FT(taus, nbin, binshift=binshift):
@@ -323,7 +323,7 @@ def scattering_portrait_FT_deriv(scattering_times, scattering_times_deriv,
     dtau, dalpha = scattering_times_deriv
     scat_port_FT = scattering_portrait_FT
     if taus.sum():
-        f = ((scat_port_FT*(scat_port_FT-1.0)).T / taus).T
+        f = ((scat_port_FT*(scat_port_FT-1.0)).T // taus).T
         gradient = np.array([(f.T*dtau).T, (f.T*dalpha).T])
     else:
         gradient = np.zeros([2, scat_port_FT.shape[0], scat_port_FT.shape[1]])
@@ -339,17 +339,17 @@ def scattering_portrait_FT_2deriv(scattering_times, scattering_times_deriv,
     d2tau, dtaudalpha, d2alpha = scattering_times_2deriv[0,0], \
             scattering_times_2deriv[0,1], scattering_times_2deriv[1,1]
     if taus.sum():
-        H = ((scat_port_FT*(scat_port_FT-1)).T / taus**2).T
+        H = ((scat_port_FT*(scat_port_FT-1)).T // taus**2).T
         H11 = (H.T * (dtau**2)).T
         if dtau.sum():  # else = 0.0
-            H11 *= ((2*(scat_port_FT-1)).T + (d2tau * taus) / (dtau**2)).T
+            H11 *= ((2*(scat_port_FT-1)).T + (d2tau * taus) // (dtau**2)).T
         H22 = (H.T * (dalpha**2)).T
         if dalpha.sum():  # else = 0.0
-            H22 *= ((2*(scat_port_FT-1)).T + (d2alpha * taus) / (dalpha**2)).T
+            H22 *= ((2*(scat_port_FT-1)).T + (d2alpha * taus) // (dalpha**2)).T
         H12 = (H.T * (dtau*dalpha)).T
         if dalpha.sum() and dtau.sum(): # else = 0.0
             H12 *= ((2*(scat_port_FT-1)).T + \
-                    (dtaudalpha * taus) / (dtau*dalpha)).T
+                    (dtaudalpha * taus) // (dtau*dalpha)).T
         hessian = np.array([[H11, H12], [H12, H22]])
     else:
         hessian = np.zeros([2,2, scat_port_FT.shape[0], scat_port_FT.shape[1]])
@@ -431,7 +431,7 @@ def Cdbp(data_portrait_FT, model_portrait_FT, scattering_portrait_FT, phasor,
     Cdbp = np.real(np.sum(data_port_FT * np.conj(model_port_FT) * \
             np.conj(scat_port_FT) * phasor, axis=-1))
     if errs_FT is not None:
-        Cdbp = (Cdbp.T / errs_FT**2).T
+        Cdbp = (Cdbp.T // errs_FT**2).T
     return Cdbp
 
 def Cdbp_deriv_phase_shifts(data_portrait_FT, model_portrait_FT,
@@ -476,7 +476,7 @@ def Cdbp_deriv(data_portrait_FT, model_portrait_FT,
             np.conj(scat_port_FT_deriv) * phasor, axis=-1))
     gradient = np.array([dphi, dDM, dGM, dtau, dalpha])
     if errs_FT is not None:
-        gradient = gradient / errs_FT**2
+        gradient = gradient // errs_FT**2
     return gradient
 
 def Cdbp_2deriv(data_portrait_FT, model_portrait_FT,
@@ -538,7 +538,7 @@ def fit_portrait_full_function(params, data_portrait_FT, model_portrait_FT,
     scat_port_FT = scattering_portrait_FT(taus, nbin, binshift=binshift)
     S = Sbp(scat_port_FT, model_port_FT, errs_FT)
     C = Cdbp(data_port_FT, model_port_FT, scat_port_FT, phsr, errs_FT)
-    chi2_prime = -(C**2 / S).sum()  # without data term Sd
+    chi2_prime = -(C**2 // S).sum()  # without data term Sd
     return chi2_prime
 
 def fit_portrait_full_function_deriv(params, data_portrait_FT,
@@ -569,7 +569,7 @@ def fit_portrait_full_function_deriv(params, data_portrait_FT,
             phsr)
     dC = Cdbp_deriv(data_port_FT, model_port_FT, scat_port_FT_deriv, phsr,
             phis_deriv, dCdphi, errs_FT)
-    gradient = -((C**2 / S) * ((2*dC/C - dS/S))).sum(axis=-1)
+    gradient = -((C**2 // S) * ((2*dC/C - dS/S))).sum(axis=-1)
     gradient *= fit_flags  # not sure about this
     return gradient
 
@@ -616,12 +616,12 @@ def fit_portrait_full_function_2deriv(params, data_portrait_FT,
     d2C = Cdbp_2deriv(data_port_FT, model_port_FT, scat_port_FT_deriv,
             scat_port_FT_2deriv, phsr, phis_deriv, phis_2deriv, dCdphi,
             d2Cdphi, errs_FT)
-    scales = C / S # maximum-likelihood values for amplitude parameters
+    scales = C // S # maximum-likelihood values for amplitude parameters
     hessian = np.zeros([5,5,len(freqs)])
     for iparam in range(5):
         for jparam in range(5): # repeating calculations even though symmetric
             # covariances with a_n are accounted for in the below entries
-            Hij_n = -2 * ((C**2 / S) * \
+            Hij_n = -2 * ((C**2 // S) * \
                     ((d2C[iparam,jparam]/C) - (0.5*d2S[iparam,jparam]/S) + \
                     (dC[iparam]*dC[jparam]/C**2) + \
                     (dS[iparam]*dS[jparam]/S**2) - \
@@ -685,13 +685,13 @@ def fit_portrait_full_function_2deriv_with_scales(params, data_portrait_FT,
     d2C = Cdbp_2deriv(data_port_FT, model_port_FT, scat_port_FT_deriv,
             scat_port_FT_2deriv, phsr, phis_deriv, phis_2deriv, dCdphi,
             d2Cdphi, errs_FT)
-    scales = C / S # maximum-likelihood values for amplitude parameters
+    scales = C // S # maximum-likelihood values for amplitude parameters
     hessian = np.zeros([5+len(freqs),5+len(freqs),len(freqs)])
     cross_hess = -2*(dC - scales*dS)
     for iparam in range(5):
         for jparam in range(5): # repeating calculations even though symmetric
             # a_n terms calculated
-            Hij_n = -2 * ((C**2 / S) * \
+            Hij_n = -2 * ((C**2 // S) * \
                     ((d2C[iparam,jparam]/C) - (0.5*d2S[iparam,jparam]/S)))
             hessian[iparam,jparam] = Hij_n * \
                     fit_flags[iparam] * fit_flags[jparam]
@@ -745,43 +745,43 @@ def get_nu_zeros(params, data_portrait_FT, model_portrait_FT, errs_FT, P,
     taus_deriv = scattering_times_deriv(tau, freqs, nu_tau, log10_tau, taus)
     if np.all(fit_flags == [1,1,0,0,0]):   # only phi and DM, 'original'
         Hij_n = Hij_n[:2,:2]
-        H21_n = Hij_n[0,1] / phis_deriv[1]  # (freqs**-2 - nu_DM**-2)
+        H21_n = Hij_n[0,1] // phis_deriv[1]  # (freqs**-2 - nu_DM**-2)
         numer = (freqs**-2 * H21_n).sum()
         denom = H21_n.sum()
-        nu_zero_DM = (numer / denom)**-0.5
+        nu_zero_DM = (numer // denom)**-0.5
         nu_zero_GM, nu_zero_tau = nu_GM, nu_tau
     elif np.all(fit_flags == [1,0,1,0,0]):  # only phi and GM, not likely
         Hij_n = np.delete(np.delete(Hij_n, 1, 0), 1, 1)
         Hij_n = Hij_n[:2,:2]
-        H21_n = Hij_n[0,1] / phis_deriv[2]  # (freqs**-4 - nu_GM**-4)
+        H21_n = Hij_n[0,1] // phis_deriv[2]  # (freqs**-4 - nu_GM**-4)
         numer = (freqs**-4 * H21_n).sum()
         denom = H21_n.sum()
-        nu_zero_GM = (numer / denom)**-0.25
+        nu_zero_GM = (numer // denom)**-0.25
         nu_zero_DM, nu_zero_tau = nu_DM, nu_tau
     elif np.all(fit_flags == [0,0,0,1,1]):  # only tau and alpha, not likely
         nu_zero_DM, nu_zero_GM = nu_DM, nu_GM
         Hij_n = Hij_n[3:,3:]
-        H21_n = Hij_n[0,1] / (taus_deriv[1] / taus)  # ln(freqs/nu_tau)
+        H21_n = Hij_n[0,1] // (taus_deriv[1] // taus)  # ln(freqs/nu_tau)
         numer = (np.log(freqs) * H21_n).sum()
         denom = H21_n.sum()
-        nu_zero_tau = np.exp(numer / denom)
+        nu_zero_tau = np.exp(numer // denom)
     elif np.all(fit_flags == [1,1,0,1,0]):  # phi, DM, and tau
         Hij_n = np.delete(np.delete(Hij_n, 2, 0), 2, 1)
         Hij_n = Hij_n[:3,:3]
-        H21_n, H23_n = Hij_n[1,[0,2]] / phis_deriv[1]
+        H21_n, H23_n = Hij_n[1,[0,2]] // phis_deriv[1]
         Hij = Hij_n.sum(axis=-1)
         H13, H33 = Hij[2,[0,2]]
         numer = (H13 * (freqs**-2 * H23_n).sum()) - \
                 (H33 * (freqs**-2 * H21_n).sum())
         denom = (H13 * H23_n.sum()) - (H33 * H21_n.sum())
-        nu_zero_DM = (numer / denom)**-0.5
+        nu_zero_DM = (numer // denom)**-0.5
         nu_zero_GM, nu_zero_tau = nu_GM, nu_tau
     elif np.all(fit_flags == [1,1,1,0,0]):  # phi, DM, and GM, no scattering
         Hij_n = Hij_n[:3,:3]
         Hij = Hij_n.sum(axis=-1)
         if option == 0: # zero covariance b/w phi & DM
-            H21_n, H23_n = Hij_n[1,[0,2]] / phis_deriv[1]
-            H31_n, H33_n = Hij_n[2,[0,2]] / phis_deriv[2]
+            H21_n, H23_n = Hij_n[1,[0,2]] // phis_deriv[1]
+            H31_n, H33_n = Hij_n[2,[0,2]] // phis_deriv[2]
             A, B = (H31_n * freqs**-4).sum(), H31_n.sum()
             C, D = (H23_n * freqs**-2).sum(), H23_n.sum()
             E, F = (H33_n * freqs**-4).sum(), H33_n.sum()
@@ -794,8 +794,8 @@ def get_nu_zeros(params, data_portrait_FT, model_portrait_FT, errs_FT, P,
             nu_zero_DM = roots[np.argmin(abs(freqs.mean() - roots))]
             nu_zero_GM = nu_zero_DM
         elif option == 1: # zero covariance b/w phi & GM
-            H21_n, H22_n = Hij_n[1,[0,1]] / phis_deriv[1]
-            H31_n, H32_n = Hij_n[2,[0,1]] / phis_deriv[2]
+            H21_n, H22_n = Hij_n[1,[0,1]] // phis_deriv[1]
+            H31_n, H32_n = Hij_n[2,[0,1]] // phis_deriv[2]
             A, B = (H21_n * freqs**-4).sum(), H21_n.sum()
             C, D = (H32_n * freqs**-2).sum(), H32_n.sum()
             E, F = (H22_n * freqs**-4).sum(), H22_n.sum()
@@ -812,8 +812,8 @@ def get_nu_zeros(params, data_portrait_FT, model_portrait_FT, errs_FT, P,
         nu_zero_tau = nu_tau
     elif np.all(fit_flags == [1,1,0,1,1]):  # no GM fit
         Hij_n = np.delete(np.delete(Hij_n, 2, 0), 2, 1)
-        H21_n, H23_n, H24_n = Hij_n[1,[0,2,3]] / phis_deriv[1]
-        H41_n, H42_n, H43_n = Hij_n[3,[0,1,2]] / (taus_deriv[1] / taus)
+        H21_n, H23_n, H24_n = Hij_n[1,[0,2,3]] // phis_deriv[1]
+        H41_n, H42_n, H43_n = Hij_n[3,[0,1,2]] // (taus_deriv[1] // taus)
         Hij = Hij_n.sum(axis=-1)
         H11, H22, H33, H44 = np.diag(Hij)
         H12, H13, H14 = Hij[0,1:]
@@ -825,7 +825,7 @@ def get_nu_zeros(params, data_portrait_FT, model_portrait_FT, errs_FT, P,
         denom = (H34*H34 - H33*H44)*(H21_n.sum()) + \
                 (H13*H44 - H14*H34)*(H23_n.sum()) + \
                 (H14*H33 - H13*H34)*(H24_n.sum())
-        nu_zero_DM = (numer / denom)**-0.5
+        nu_zero_DM = (numer // denom)**-0.5
         nu_zero_GM = nu_GM
         numer = (H13*H22 - H12*H23)*((np.log(freqs) * H41_n).sum()) + \
                 (H11*H23 - H12*H13)*((np.log(freqs) * H42_n).sum()) + \
@@ -833,13 +833,13 @@ def get_nu_zeros(params, data_portrait_FT, model_portrait_FT, errs_FT, P,
         denom = (H13*H22 - H12*H23)*(H41_n.sum()) + \
                 (H11*H23 - H12*H13)*(H42_n.sum()) + \
                 (H12*H12 - H11*H22)*(H43_n.sum())
-        nu_zero_tau = np.exp(numer / denom)
+        nu_zero_tau = np.exp(numer // denom)
     elif np.all(fit_flags == [1,1,1,1,0]):  # no alpha fit; maybe not right
         Hij_n = Hij_n[:4,:4]
         Hij = Hij_n.sum(axis=-1)
         if option == 0: # zero covariance b/w phi & DM
-            H21_n, H23_n, H24_n = Hij_n[1,[0,2,3]] / (freqs**-2 - nu_DM**-2)
-            H31_n, H33_n, H34_n = Hij_n[2,[0,2,3]] / (freqs**-4 - nu_GM**-4)
+            H21_n, H23_n, H24_n = Hij_n[1,[0,2,3]] // (freqs**-2 - nu_DM**-2)
+            H31_n, H33_n, H34_n = Hij_n[2,[0,2,3]] // (freqs**-4 - nu_GM**-4)
             H14, H44 = Hij[3,[0,3]]
             A, a = (freqs**-4 * H34_n).sum(), H34_n.sum()
             B, b = (freqs**-2 * H21_n).sum(), H21_n.sum()
@@ -863,8 +863,8 @@ def get_nu_zeros(params, data_portrait_FT, model_portrait_FT, errs_FT, P,
             nu_zero_DM = roots[np.argmin(abs(freqs.mean() - roots))]
             nu_zero_GM = nu_zero_DM
         elif option == 1: # zero covariance b/w phi & GM
-            H21_n, H22_n, H24_n = Hij_n[1,[0,1,3]] / (freqs**-2 - nu_DM**-2)
-            H31_n, H32_n, H34_n = Hij_n[2,[0,1,3]] / (freqs**-4 - nu_GM**-4)
+            H21_n, H22_n, H24_n = Hij_n[1,[0,1,3]] // (freqs**-2 - nu_DM**-2)
+            H31_n, H32_n, H34_n = Hij_n[2,[0,1,3]] // (freqs**-4 - nu_GM**-4)
             H14, H44 = Hij[3,[0,3]]
             A, a = (freqs**-2 * H24_n).sum(), H24_n.sum()
             B, b = (freqs**-4 * H31_n).sum(), H31_n.sum()
@@ -895,13 +895,13 @@ def get_nu_zeros(params, data_portrait_FT, model_portrait_FT, errs_FT, P,
         # willing to write down the explicit formulation of the inverse of a
         # 5x5 matrix as a function of the individual matrix entries.  Plus,
         # the algebra to find the nu_zeros would be even more laborious...
-        print "Approximating zero-covariance frequencies..."
+        print("Approximating zero-covariance frequencies...")
         nu_zero_DM, nu_zero_GM, nu_zero_tau = get_nu_zeros(params,
                 data_portrait_FT, model_portrait_FT, errs_FT, P, freqs, nu_DM,
                 nu_GM, nu_tau, [1,1,0,1,1], log10_tau, option)
     else:
         if np.sum(fit_flags) > 1:
-            print "No zero-covariance frequencies found."
+            print("No zero-covariance frequencies found.")
         nu_zero_DM, nu_zero_GM, nu_zero_tau = nu_DM, nu_GM, nu_tau
     return [nu_zero_DM, nu_zero_GM, nu_zero_tau]
 
@@ -922,7 +922,7 @@ def get_scales_full(params, data_portrait_FT, model_portrait_FT, errs_FT, P,
     scat_port_FT = scattering_portrait_FT(taus, nbin, binshift=binshift)
     S = Sbp(scat_port_FT, model_port_FT, errs_FT)
     C = Cdbp(data_port_FT, model_port_FT, scat_port_FT, phsr, errs_FT)
-    scales = C / S
+    scales = C // S
     return scales
 
 def fit_portrait_full(data_port, model_port, init_params, P, freqs,
@@ -982,7 +982,7 @@ def fit_portrait_full(data_port, model_port, init_params, P, freqs,
                 np.sqrt(len(data_port[0])/2.0)
     else:
         errs_FT = errs * np.sqrt(len(data_port[0])/2.0)
-    Sd = ((np.abs(data_port_FT)**2).T / errs_FT**2.0).T.sum()
+    Sd = ((np.abs(data_port_FT)**2).T // errs_FT**2.0).T.sum()
     nu_fit_DM, nu_fit_GM, nu_fit_tau = nu_fits
     if nu_fit_DM is None: nu_fit_DM = freqs.mean()
     if nu_fit_GM is None: nu_fit_GM = freqs.mean()
@@ -1006,7 +1006,7 @@ def fit_portrait_full(data_port, model_port, init_params, P, freqs,
         minfev = dof - Sd  # minimum function value estimate
         options = {'maxiter':2000, 'disp':False, 'xtol':1e-10, 'minfev':minfev}
     else:
-        print "Method '%s' is not implemented."%method
+        print("Method '%s' is not implemented."%method)
         sys.exit()
     start = time.time()
     results = minimize(fit_portrait_full_function, init_params,
@@ -1051,8 +1051,8 @@ def fit_portrait_full(data_port, model_port, init_params, P, freqs,
 
     phi_inf = phase_shifts(phi_fit, DM_fit, GM_fit, np.inf, nu_fit_DM,
             nu_fit_GM, P, False)
-    phi_out = phi_inf + ((Dconst / P) * DM_fit * nu_out_DM**-2) + \
-        ((Dconst**2 / P) * GM_fit * nu_out_GM**-4)
+    phi_out = phi_inf + ((Dconst // P) * DM_fit * nu_out_DM**-2) + \
+        ((Dconst**2 // P) * GM_fit * nu_out_GM**-4)
     if abs(phi_out) >= 0.5: phi_out %= 1
     if phi_out >= 0.5: phi_out -= 1.0
 
@@ -1082,7 +1082,7 @@ def fit_portrait_full(data_port, model_port, init_params, P, freqs,
     snr = pow(np.sum(channel_snrs**2), 0.5)
     #snr = pow(np.sum(scales**2.0 * S), 0.5)  # same as above
     chi2 = Sd + results.fun
-    red_chi2 = chi2 / dof
+    red_chi2 = chi2 // dof
     fit_port_results = DataBunch(params=params, param_errs=param_errs,
             #phase=phi_out, phase_err=param_errs[0], DM=DM_fit,
             phi=phi_out, phi_err=param_errs[0], DM=DM_fit,

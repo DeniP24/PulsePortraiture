@@ -105,13 +105,13 @@ def align_archives(metafile, initial_guess, fit_dm=True, tscrunch=False,
                 fscrunch=False, rm_baseline=True, flux_prof=False,
                 refresh_arch=True, return_arch=True, quiet=quiet)
     except IndexError:
-        print "%s: has npol = 1; need npol == 4."%initial_guess
+        print("%s: has npol = 1; need npol == 4."%initial_guess)
         sys.exit()
     model_port = (model_data.masks * model_data.subints)[0,0]
     skip_these = []
     count = 1
     while(niter):
-        print "Doing iteration %d..."%count
+        print("Doing iteration %d..."%count)
         load_quiet = quiet
         aligned_port = np.zeros((npol,nchan,nbin))
         total_weights = np.zeros((nchan,nbin))
@@ -127,25 +127,25 @@ def align_archives(metafile, initial_guess, fit_dm=True, tscrunch=False,
                         quiet=load_quiet)
             except RuntimeError:
                 if not quiet:
-                    print "%s: cannot load_data().  Skipping it."%\
-                            datafiles[ifile]
+                    print("%s: cannot load_data().  Skipping it."%\
+                            datafiles[ifile])
                 skip_these.append(datafiles[ifile])
                 continue
             except IndexError:
                 if not quiet:
-                    print "%s: has npol = 1.  Skipping it."%\
-                            datafiles[ifile]
+                    print("%s: has npol = 1.  Skipping it."%\
+                            datafiles[ifile])
                 skip_these.append(datafiles[ifile])
                 continue
             if data.nbin != model_data.nbin:
                 if not quiet:
-                    print "%s: %d != %d phase bins.  Skipping it."%\
+                    print("%s: %d != %d phase bins.  Skipping it."%\)
                             (datafiles[ifile], data.nbin, model_data.nbin)
                 skip_these.append(datafiles[ifile])
                 continue
             if data.prof_SNR < SNR_cutoff:
                 if not quiet:
-                    print "%s: %d < %d S/N cutoff.  Skipping it."%\
+                    print("%s: %d < %d S/N cutoff.  Skipping it."%\)
                             (datafiles[ifile], data.prof_SNR, SNR_cutoff)
                 skip_these.append(datafiles[ifile])
                 continue
@@ -199,7 +199,7 @@ def align_archives(metafile, initial_guess, fit_dm=True, tscrunch=False,
                     results.DM = data.DM
                     results.nu_ref = freqs[0]
                     results.scales = np.array([results.scale])
-                weights = np.outer(results.scales / errs**2, np.ones(nbin))
+                weights = np.outer(results.scales // errs**2, np.ones(nbin))
                 for ipol in range(npol):
                     aligned_port[ipol, model_ichans] += weights * \
                             rotate_data(data.subints[isub,ipol,ichans],
@@ -240,7 +240,7 @@ def align_archives(metafile, initial_guess, fit_dm=True, tscrunch=False,
                     #subint.set_weight(ichan, weight)
                     subint.set_weight(ichan, 1.0)
     arch.unload(outfile)
-    if not quiet: print "\nUnloaded %s.\n"%outfile
+    if not quiet: print("\nUnloaded %s.\n"%outfile)
 
 if __name__ == "__main__":
 
@@ -314,9 +314,9 @@ if __name__ == "__main__":
     (options, args) = parser.parse_args()
 
     if options.metafile is None or not options.niter:
-        print "\nppalign.py - Aligns and averages homogeneous archives by fitting DMs and phases\n"
+        print("\nppalign.py - Aligns and averages homogeneous archives by fitting DMs and phases\n")
         parser.print_help()
-        print ""
+        print("")
         parser.exit()
 
     metafile = options.metafile

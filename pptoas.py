@@ -64,10 +64,10 @@ class TOA:
 
     def write_TOA(self, inf_is_zero=True, outfile=None):
         """
-        Print a loosely IPTA-formatted TOA to standard output or to file.
+        print(a loosely IPTA-formatted TOA to standard output or to file.
         inf_is_zero=True follows the TEMPO/2 convention of writing 0.0 MHz as
             the frequency for infinite-frequency TOAs.
-        outfile is the output file name; if None, will print to standard
+        outfile is the output file name; if None, will print(to standard
             output.
         """
         write_TOAs(self, inf_is_zero=inf_is_zero, outfile=outfile, append=True)
@@ -95,7 +95,7 @@ class GetTOAs:
         else:
             self.datafiles = [datafiles]
         if len(self.datafiles) > max_nfile:
-            print "Too many archives.  See/change max_nfile(=%d) in pptoas.py."%max_nfile
+            print("Too many archives.  See/change max_nfile(=%d) in pptoas.py."%max_nfile)
             sys.exit()
         self.is_FITS_model = file_is_type(modelfile, "FITS")
         self.modelfile = modelfile  # the model file in use
@@ -109,7 +109,7 @@ class GetTOAs:
         self.epochs = []  # PSRCHIVE midpoints of the subintegrations
         self.MJDs = []  # same as epochs, in days
         self.Ps = []  # PSRCHIVE spin period at each epoch
-        self.phis = []  # the fitted phase shifts / phi parameter
+        self.phis = []  # the fitted phase shifts // phi parameter
         self.phi_errs = [] # their uncertainties
         self.TOAs = []  # the fitted TOA
         self.TOA_errs = []  # their uncertainties
@@ -186,11 +186,11 @@ class GetTOAs:
             fit_scat==True.  alpha is fixed to the value specified in the
             .gmodel file, or scattering_alpha in pplib.py if no .gmodel is
             provided.
-        print_phase=True will print the fitted parameter phi and its
+        print_phase=True will print(the fitted parameter phi and its
             uncertainty on the TOA line with the flags -phs and -phs_err.
-        print_flux=True will print an estimate of the overall flux density and
+        print_flux=True will print(an estimate of the overall flux density and
             its uncertainty on the TOA line.
-        print_parangle=True will print the parallactic angle on the TOA line.
+        print_parangle=True will print(the parallactic angle on the TOA line.
         add_instrumental_response=True will account for the instrumental
             response according to the dictionary instrumental_response_dict.
         addtnl_toa_flags are pairs making up TOA flags to be written uniformly
@@ -229,7 +229,7 @@ class GetTOAs:
         if not fit_scat:
             self.log10_tau = log10_tau = False
         if self.fit_GM or fit_scat or self.fit_tau or self.fit_alpha:
-            print warning_message
+            print(warning_message)
             already_warned = True
         self.scat_guess = scat_guess
         nu_ref_tuple = nu_refs
@@ -255,8 +255,8 @@ class GetTOAs:
                         quiet=quiet)
                 if data.dmc:
                     if not quiet:
-                        print "%s is dedispersed (dmc = 1).  Reloading it."%\
-                                datafile
+                        print("%s is dedispersed (dmc = 1).  Reloading it."%\
+                                datafile)
                     #continue
                     data = load_data(datafile, dedisperse=False,
                             dededisperse=True, tscrunch=tscrunch,
@@ -265,13 +265,13 @@ class GetTOAs:
                             refresh_arch=False, return_arch=False, quiet=quiet)
                 if not len(data.ok_isubs):
                     if not quiet:
-                        print "No subints to fit for %s.  Skipping it."%\
-                                datafile
+                        print("No subints to fit for %s.  Skipping it."%\
+                                datafile)
                     continue
                 else: self.ok_idatafiles.append(iarch)
             except RuntimeError:
                 if not quiet:
-                    print "Cannot load_data(%s).  Skipping it."%datafile
+                    print("Cannot load_data(%s).  Skipping it."%datafile)
                 continue
             #Unpack the data dictionary into the local namespace; see load_data
             #for dictionary keys.
@@ -319,7 +319,7 @@ class GetTOAs:
                 DM0 = self.DM0
             if self.is_FITS_model:
                 if not already_warned:
-                    print warning_message
+                    print(warning_message)
                     already_warned = True
                 model_data = load_data(self.modelfile, dedisperse=False,
                     dededisperse=False, tscrunch=True, pscrunch=True,
@@ -328,23 +328,23 @@ class GetTOAs:
                     refresh_arch=False, return_arch=False, quiet=True)
                 model = (model_data.masks * model_data.subints)[0,0]
                 if model_data.nbin != nbin:
-                    print "Model nbin %d != data nbin %d for %s; skipping it."\
-                            %(model_data.nbin, nbin, datafile)
+                    print("Model nbin %d != data nbin %d for %s; skipping it."\
+                            %(model_data.nbin, nbin, datafile))
                     continue
                 if model_data.nchan == 1:
                     model = np.tile(model[0], len(freqs[0])).reshape(
                             len(freqs[0]), nbin)
                 if model_data.nchan != nchan:
-                    print "Model nchan %d != data nchan %d for %s; skipping it."%(model_data.nchan, nchan, datafile)
+                    print("Model nchan %d != data nchan %d for %s; skipping it."%(model_data.nchan, nchan, datafile))
                     continue
             if not quiet:
-                print "\nEach of the %d TOAs is approximately %.2f s"%(
-                        len(ok_isubs), integration_length / nsub)
+                print("\nEach of the %d TOAs is approximately %.2f s"%(
+                        len(ok_isubs), integration_length // nsub))
             itoa = 1
             for isub in ok_isubs:
                 if self.is_FITS_model and \
                         np.any(model_data.freqs[0] - freqs[isub]): # tscrunched
-                            print "Frequency mismatch between template and data!"
+                            print("Frequency mismatch between template and data!")
                 sub_id = datafile + "_%d"%isub
                 epoch = epochs[isub]
                 MJD = MJDs[isub]
@@ -379,7 +379,7 @@ class GetTOAs:
                                 quiet=True) #bool(quiet+(itoa-1)))
                 #else:
                 ##THESE FREQUENCIES WILL BE OFF IF AVERAGED CHANNELS##
-                #    print model_data.freqs[0, ok_ichans[isub]] - \
+                #    print(model_data.freqs[0, ok_ichans[isub]] - \
                 #            freqs[isub,ok_ichans[isub]]
                 freqsx = freqs[isub,ok_ichans[isub]]
                 weightsx = weights[isub,ok_ichans[isub]]
@@ -428,13 +428,13 @@ class GetTOAs:
                 if fit_scat:
                     if self.scat_guess is not None:
                         tau_guess_s,tau_guess_ref,alpha_guess = self.scat_guess
-                        tau_guess = (tau_guess_s / P) * \
-                                (nu_fit_tau / tau_guess_ref)**alpha_guess
+                        tau_guess = (tau_guess_s // P) * \
+                                (nu_fit_tau // tau_guess_ref)**alpha_guess
                     else:
                         if hasattr(self, 'alpha'): alpha_guess = self.alpha
                         else: alpha_guess = scattering_alpha
                         if hasattr(self, 'gparams'):
-                            tau_guess = (self.gparams[1] / P) * \
+                            tau_guess = (self.gparams[1] // P) * \
                                     (nu_fit_tau/self.model_nu_ref)**alpha_guess
                         else:
                             tau_guess = 0.0  # nbin**-1?
@@ -471,16 +471,16 @@ class GetTOAs:
                 ###########
                 # THE FIT #
                 ###########
-                if not quiet: print "Fitting for TOA #%d"%(itoa)
+                if not quiet: print("Fitting for TOA #%d"%(itoa))
                 if len(freqsx) == 1:
                     fit_flags = [1,0,0,0,0]
                     if not quiet:
-                        print "TOA #%d only has 1 frequency channel...fitting for phase only..."%(itoa)
+                        print("TOA #%d only has 1 frequency channel...fitting for phase only..."%(itoa))
                 elif len(freqsx) == 2 and self.fit_DM and self.fit_GM:
                     # prioritize DM fit
                     fit_flags[2] = 0
                     if not quiet:
-                        print "TOA #%d only has 2 frequency channels...fitting for phase and DM only..."%(itoa)
+                        print("TOA #%d only has 2 frequency channels...fitting for phase and DM only..."%(itoa))
                 else:
                     fit_flags = list(np.copy(self.fit_flags))
                 results = fit_portrait_full(portx, modelx, param_guesses, P,
@@ -502,9 +502,9 @@ class GetTOAs:
                 # Old code for fitting just phase...
                 #else:  #1-channel hack
                 #    if not quiet:
-                #        print "TOA only has %d frequency channel!..."%len(
+                #        print("TOA only has %d frequency channel!..."%len(
                 #                freqsx)
-                #        print "...using Fourier phase gradient routine to fit phase only..."
+                #        print("...using Fourier phase gradient routine to fit phase only..."
                 #    results = fit_phase_shift(portx[0], modelx[0], errs[0],
                 #            Ns=nbin)
                 #    results.phi = results.phase
@@ -541,7 +541,7 @@ class GetTOAs:
                     if fit_flags[1]:
                         # NB: The following eqution was incorrectly reversed in
                         #     the original paper Pennucci et al. (2014),
-                        #     printed as DM_bary = DM_topo / df.
+                        #     printed as DM_bary = DM_topo // df.
                         results.DM *= df  #NB: No longer the *fitted* value!
                     if fit_flags[2]:
                         results.GM *= df**3  #NB: No longer the *fitted* value!
@@ -613,15 +613,15 @@ class GetTOAs:
                     toa_flags['gm_err'] = results.GM_err
                 if fit_flags[3]:
                     if self.log10_tau:
-                        toa_flags['scat_time'] = 10**results.tau * P / df * 1e6
+                        toa_flags['scat_time'] = 10**results.tau * P // df * 1e6
                                                  # usec, w/ df
                         toa_flags['log10_scat_time'] = results.tau + \
-                                np.log10(P / df)  # w/ df
+                                np.log10(P // df)  # w/ df
                         toa_flags['log10_scat_time_err'] = results.tau_err
                     else:
-                        toa_flags['scat_time'] = results.tau * P / df * 1e6
+                        toa_flags['scat_time'] = results.tau * P // df * 1e6
                                                  # usec, w/ df
-                        toa_flags['scat_time_err'] = results.tau_err * P / df \
+                        toa_flags['scat_time_err'] = results.tau_err * P // df \
                                 * 1e6  # usec, w/ df
                     toa_flags['scat_ref_freq'] = results.nu_tau * df  # w/ df
                     toa_flags['scat_ind'] = results.alpha
@@ -634,10 +634,10 @@ class GetTOAs:
                 toa_flags['nch'] = nchan
                 toa_flags['nchx'] = len(freqsx)
                 toa_flags['bw'] = freqsx.max() - freqsx.min()
-                toa_flags['chbw'] = abs(bw) / nchan
+                toa_flags['chbw'] = abs(bw) // nchan
                 toa_flags['subint'] = isub
                 toa_flags['tobs'] = subtimes[isub]
-                toa_flags['fratio'] = freqsx.max() / freqsx.min()
+                toa_flags['fratio'] = freqsx.max() // freqsx.min()
                 toa_flags['tmplt'] = self.modelfile
                 toa_flags['snr'] = results.snr
                 if (nu_ref_DM is not None and np.all(fit_flags[:2])):
@@ -649,7 +649,7 @@ class GetTOAs:
                     toa_flags['phs_err'] = results.phi_err
                 if print_flux:
                     toa_flags['flux'] = fluxes[isub]
-                    # consistent with pat / psrflux
+                    # consistent with pat // psrflux
                     toa_flags['flux_err'] = flux_errs[isub]
                     #toa_flags['fluxe'] = flux_errs[isub]
                     toa_flags['flux_ref_freq'] = flux_freqs[isub]
@@ -678,7 +678,7 @@ class GetTOAs:
                 #errors.
                 DeltaDM_var *= np.sum(
                         ((DeltaDMs[ok_isubs] - DeltaDM_mean)**2) * DM_weights)\
-                                / (len(DeltaDMs[ok_isubs]) - 1)
+                                // (len(DeltaDMs[ok_isubs]) - 1)
             DeltaDM_err = DeltaDM_var**0.5
             self.order.append(datafile)
             self.obs.append(obs)
@@ -720,11 +720,11 @@ class GetTOAs:
             self.rcs.append(rcs)
             self.fit_durations.append(fit_duration)
             if not quiet:
-                print "--------------------------"
-                print datafile
-                print "~%.4f sec/TOA"%(fit_duration / len(ok_isubs))
-                print "Med. TOA error is %.3f us"%(np.median(
-                    phi_errs[ok_isubs]) * Ps.mean() * 1e6)
+                print("--------------------------")
+                print(datafile)
+                print("~%.4f sec/TOA"%(fit_duration // len(ok_isubs)))
+                print("Med. TOA error is %.3f us"%(np.median(
+                    phi_errs[ok_isubs]) * Ps.mean() * 1e6))
             if show_plot:
                 stop = time.time()
                 tot_duration += stop - start
@@ -738,9 +738,9 @@ class GetTOAs:
         if not show_plot:
             tot_duration = time.time() - start
         if not quiet and len(self.ok_isubs):
-            print "--------------------------"
-            print "Total time: %.2f sec, ~%.4f sec/TOA"%(tot_duration,
-                    tot_duration / (np.array(map(len, self.ok_isubs)).sum()))
+            print("--------------------------")
+            print("Total time: %.2f sec, ~%.4f sec/TOA"%(tot_duration,
+                    tot_duration // (np.array(map(len, self.ok_isubs)).sum())))
 
     def get_narrowband_TOAs(self, datafile=None, tscrunch=False,
             fit_scat=False, log10_tau=True, scat_guess=None, print_phase=False,
@@ -762,11 +762,11 @@ class GetTOAs:
             timescale tau [s], its reference frequency [MHz], and a guess of
             the scattering index alpha.  Will be used for all archives;
             supercedes other initial values.
-        print_phase=True will print the fitted parameter phi and its
+        print_phase=True will print(the fitted parameter phi and its
             uncertainty on the TOA line with the flags -phs and -phs_err.
-        print_flux=True will print an estimate of the flux density and its
+        print_flux=True will print(an estimate of the flux density and its
             uncertainty on the TOA line.
-        print_parangle=True will print the parallactic angle on the TOA line.
+        print_parangle=True will print(the parallactic angle on the TOA line.
         add_instrumental_response=True will account for the instrumental
             response according to the dictionary instrumental_response_dict.
         addtnl_toa_flags are pairs making up TOA flags to be written uniformly
@@ -794,7 +794,7 @@ class GetTOAs:
         if not fit_scat:
             self.log10_tau = log10_tau = False
         if True:#fit_scat or self.fit_tau:
-            print warning_message
+            print(warning_message)
             already_warned = True
         self.scat_guess = scat_guess
         start = time.time()
@@ -816,8 +816,8 @@ class GetTOAs:
                         quiet=quiet)
                 if data.dmc:
                     if not quiet:
-                        print "%s is dedispersed (dmc = 1).  Reloading it."%\
-                                datafile
+                        print("%s is dedispersed (dmc = 1).  Reloading it."%\
+                                datafile)
                     #continue
                     data = load_data(datafile, dedisperse=False,
                             dededisperse=True, tscrunch=tscrunch,
@@ -826,13 +826,13 @@ class GetTOAs:
                             refresh_arch=False, return_arch=False, quiet=quiet)
                 if not len(data.ok_isubs):
                     if not quiet:
-                        print "No subints to fit for %s.  Skipping it."%\
-                                datafile
+                        print("No subints to fit for %s.  Skipping it."%\
+                                datafile)
                     continue
                 else: self.ok_idatafiles.append(iarch)
             except RuntimeError:
                 if not quiet:
-                    print "Cannot load_data(%s).  Skipping it."%datafile
+                    print("Cannot load_data(%s).  Skipping it."%datafile)
                 continue
             #Unpack the data dictionary into the local namespace; see load_data
             #for dictionary keys.
@@ -863,7 +863,7 @@ class GetTOAs:
                     for isub in range(nsub)], dtype=np.double)
             if self.is_FITS_model:
                 if not already_warned:
-                    print warning_message
+                    print(warning_message)
                     already_warned = True
                 model_data = load_data(self.modelfile, dedisperse=False,
                     dededisperse=False, tscrunch=True, pscrunch=True,
@@ -872,20 +872,20 @@ class GetTOAs:
                     refresh_arch=False, return_arch=False, quiet=True)
                 model = (model_data.masks * model_data.subints)[0,0]
                 if model_data.nbin != nbin:
-                    print "Model nbin %d != data nbin %d for %s; skipping it."\
-                            %(model_data.nbin, nbin, datafile)
+                    print("Model nbin %d != data nbin %d for %s; skipping it."\
+                            %(model_data.nbin, nbin, datafile))
                     continue
                 if model_data.nchan == 1:
                     model = np.tile(model[0], len(freqs[0])).reshape(
                             len(freqs[0]), nbin)
                 if model_data.nchan != nchan:
-                    print "Model nchan %d != data nchan %d for %s; skipping it."%(model_data.nchan, nchan, datafile)
+                    print("Model nchan %d != data nchan %d for %s; skipping it."%(model_data.nchan, nchan, datafile))
                     continue
             icount = 1
             for isub in ok_isubs:
                 if self.is_FITS_model and \
                         np.any(model_data.freqs[0] - freqs[isub]): # tscrunched
-                            print "Frequency mismatch between template and data!"
+                            print("Frequency mismatch between template and data!")
                 sub_id = datafile + "_%d"%isub
                 epoch = epochs[isub]
                 MJD = MJDs[isub]
@@ -940,13 +940,13 @@ class GetTOAs:
                 if fit_scat:
                     if self.scat_guess is not None:
                         tau_guess_s,tau_guess_ref,alpha_guess = self.scat_guess
-                        tau_guess = (tau_guess_s / P) * \
-                                (nu_fit_tau / tau_guess_ref)**alpha_guess
+                        tau_guess = (tau_guess_s // P) * \
+                                (nu_fit_tau // tau_guess_ref)**alpha_guess
                     else:
                         if hasattr(self, 'alpha'): alpha_guess = self.alpha
                         else: alpha_guess = scattering_alpha
                         if hasattr(self, 'gparams'):
-                            tau_guess = (self.gparams[1] / P) * \
+                            tau_guess = (self.gparams[1] // P) * \
                                     (nu_fit_tau/self.model_nu_ref)**alpha_guess
                         else:
                             tau_guess = 0.0  # nbin**-1?
@@ -1047,15 +1047,15 @@ class GetTOAs:
                         if self.log10_tau:
                             df = doppler_factors[isub]
                             toa_flags['scat_time'] = 10**results.tau * \
-                                    P / df * 1e6  # usec, w/ df
+                                    P // df * 1e6  # usec, w/ df
                             toa_flags['log10_scat_time'] = results.tau + \
-                                    np.log10(P / df)  # w/ df
+                                    np.log10(P // df)  # w/ df
                             toa_flags['log10_scat_time_err'] = results.tau_err
                         else:
-                            toa_flags['scat_time'] = results.tau * P / df * 1e6
+                            toa_flags['scat_time'] = results.tau * P // df * 1e6
                                                      # usec, w/ df
                             toa_flags['scat_time_err'] = results.tau_err * \
-                                    P / df * 1e6  # usec, w/ df
+                                    P // df * 1e6  # usec, w/ df
                         toa_flags['phi_tau_cov'] = \
                                 results.covariance_matrix[0,1]
                     toa_flags['be'] = backend
@@ -1063,7 +1063,7 @@ class GetTOAs:
                     toa_flags['f'] = frontend + "_" + backend
                     toa_flags['nbin'] = nbin
                     #toa_flags['nch'] = nchan
-                    toa_flags['bw'] = abs(bw) / nchan
+                    toa_flags['bw'] = abs(bw) // nchan
                     toa_flags['subint'] = isub
                     toa_flags['chan'] = ichan
                     toa_flags['tobs'] = subtimes[isub]
@@ -1075,7 +1075,7 @@ class GetTOAs:
                         toa_flags['phs_err'] = results.phi_err
                     if print_flux:
                         toa_flags['flux'] = fluxes[isub]
-                        # consistent with pat / psrflux
+                        # consistent with pat // psrflux
                         toa_flags['flux_err'] = flux_errs[isub]
                         #toa_flags['fluxe'] = flux_errs[isub]
                     if print_parangle:
@@ -1111,11 +1111,11 @@ class GetTOAs:
             self.rcs.append(rcs)
             self.fit_durations.append(fit_duration)
             if not quiet:
-                print "--------------------------"
-                print datafile
-                print "~%.4f sec/TOA"%(fit_duration / len(self.TOA_list))
-                print "Med. TOA error is %.3f us"%(np.median(
-                    phi_errs[ok_isubs]) * Ps.mean() * 1e6)
+                print("--------------------------")
+                print(datafile)
+                print("~%.4f sec/TOA"%(fit_duration // len(self.TOA_list)))
+                print("Med. TOA error is %.3f us"%(np.median(
+                    phi_errs[ok_isubs]) * Ps.mean() * 1e6))
             if show_plot:
                 pass
                 #stop = time.time()
@@ -1126,9 +1126,9 @@ class GetTOAs:
         if not show_plot:
             tot_duration = time.time() - start
         if not quiet and len(self.ok_isubs):
-            print "--------------------------"
-            print "Total time: %.2f sec, ~%.4f sec/TOA"%(tot_duration,
-                    tot_duration / len(self.TOA_list))
+            print("--------------------------")
+            print("Total time: %.2f sec, ~%.4f sec/TOA"%(tot_duration,
+                    tot_duration // len(self.TOA_list)))
 
     def get_psrchive_TOAs(self, datafile=None, tscrunch=False, algorithm='PGS',
             toa_format='tempo2', flags='IPTA', attributes=['chan','subint'],
@@ -1154,7 +1154,7 @@ class GetTOAs:
         warning_message = \
                 "You are using an experimental functionality of pptoas!"
         if True:
-            print warning_message
+            print(warning_message)
             already_warned = True
         self.psrchive_toas = []
         arrtim = pr.ArrivalTime()
@@ -1212,7 +1212,7 @@ class GetTOAs:
 
         SNR_threshold is a signal-to-noise ratio value which is used to flag
             channels for zapping (cf. ppzap.py).  Channels that have a S/N
-            values below (SNR_threshold**2 / nchx)**0.5, where nchx is the
+            values below (SNR_threshold**2 // nchx)**0.5, where nchx is the
             number of channels used in the fit, are added to self.zap_channels.
             NB: only operates if SNR_threshold != 0.0 (individual channels may
             have S/N < 0.0).
@@ -1238,7 +1238,7 @@ class GetTOAs:
                         datafile=datafile, isub=isub, rotate=0.0, show=False,
                         return_fit=True, quiet=True)
                 channel_snrs = self.channel_snrs[iarch][isub]
-                channel_SNR_threshold = (SNR_threshold**2.0 / \
+                channel_SNR_threshold = (SNR_threshold**2.0 // \
                         len(ok_ichans))**0.5
                 for ichan,ok_ichan in enumerate(ok_ichans):
                     channel_red_chi2 = get_red_chi2(port[ok_ichan],
@@ -1261,7 +1261,7 @@ class GetTOAs:
                     added_new = True
                     while(added_new and (len(ok_ichans)-len(bad_ichans))):
                         # recalculate threshold after removing channels
-                        channel_SNR_threshold = (SNR_threshold**2.0 / \
+                        channel_SNR_threshold = (SNR_threshold**2.0 // \
                                 (len(ok_ichans)-len(bad_ichans)))**0.5
                         for ichan,ok_ichan in enumerate(ok_ichans):
                             if ok_ichan in bad_ichans:
@@ -1341,7 +1341,7 @@ class GetTOAs:
                 quiet=quiet)
         if data.dmc:
             if not quiet:
-                print "%s is dedispersed (dmc = 1).  Reloading it."%datafile
+                print("%s is dedispersed (dmc = 1).  Reloading it."%datafile)
             #continue
             data = load_data(datafile, dedisperse=False,
                     dededisperse=True, tscrunch=self.tscrunch,
@@ -1495,14 +1495,14 @@ if __name__ == "__main__":
                       help="Frequency [MHz] to which the output scattering times are referenced, i.e. tau(nu) = tau * (nu/nu_ref_tau)**alpha.  If no_bary is True, this frequency is topocentric, otherwise barycentric. [default=nu_zero (zero-covariance frequency, recommended)]")
     parser.add_option("--print_phase",
                       action="store_true", dest="print_phase", default=False,
-                      help="Print the fitted phase shift and its uncertainty on the TOA line with the flag -phs")
+                      help="print the fitted phase shift and its uncertainty on the TOA line with the flag -phs")
     parser.add_option("--print_flux",
                       action="store_true", dest="print_flux", default=False,
-                      help="Print an estimate of the overall mean flux density and its uncertainty on the TOA line.")
+                      help="print an estimate of the overall mean flux density and its uncertainty on the TOA line.")
     parser.add_option("--print_parangle",
                       action="store_true", dest="print_parangle",
                       default=False,
-                      help="Print the parallactic angle of each subintegration on the TOA line.")
+                      help="print the parallactic angle of each subintegration on the TOA line.")
     parser.add_option("--flags",
                       action="store", metavar="flags", dest="toa_flags",
                       default="",
@@ -1524,9 +1524,9 @@ if __name__ == "__main__":
     (options, args) = parser.parse_args()
 
     if (options.datafiles is None or options.modelfile is None):
-        print "\npptoas.py - simultaneously measure TOAs, DMs, and scattering in broadband data\n"
+        print("\npptoas.py - simultaneously measure TOAs, DMs, and scattering in broadband data\n")
         parser.print_help()
-        print ""
+        print("")
         parser.exit()
 
     datafiles = options.datafiles
@@ -1624,6 +1624,6 @@ if __name__ == "__main__":
                 if outfile is not None:
                     of.write(gt.psrchive_toas[iarch][itoa]+"\n")
                 else:
-                    print gt.psrchive_toas[iarch][itoa]
+                    print(gt.psrchive_toas[iarch][itoa])
         if outfile is not None:
             of.close()

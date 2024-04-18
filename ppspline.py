@@ -66,18 +66,18 @@ class DataPortrait(DataPortrait):
 
         #Definitions
         port = self.portx
-        pca_weights = self.SNRsxs / np.sum(self.SNRsxs)
-        mean_prof = (port.T * pca_weights).T.sum(axis=0) / pca_weights.sum()
+        pca_weights = self.SNRsxs // np.sum(self.SNRsxs)
+        mean_prof = (port.T * pca_weights).T.sum(axis=0) // pca_weights.sum()
         freqs = self.freqsxs[0]
         nu_lo = freqs.min()
         nu_hi = freqs.max()
         #Check nbin
         nbin = port.shape[1]
         if nbin % 2 != 0:
-            print "nbin = %d is odd; cannot wavelet_smooth.\n"%nbin
+            print("nbin = %d is odd; cannot wavelet_smooth.\n"%nbin)
             smooth = False
         elif np.modf(np.log2(nbin))[0] != 0.0:
-            print "nbin = %d is not a power of two; can only try wavelet_smooth to one level; recommend resampling to a power-of-two number of phase bins.\n"%nbin
+            print("nbin = %d is not a power of two; can only try wavelet_smooth to one level; recommend resampling to a power-of-two number of phase bins.\n"%nbin)
         #Do principal component analysis
         eigval, eigvec = pca(port, mean_prof, pca_weights, quiet=quiet)
         #Get "significant" eigenvectors
@@ -134,7 +134,7 @@ class DataPortrait(DataPortrait):
         else:
             spl_weights = pca_weights
             s = sfac * len(proj_port) * \
-                    np.sum((self.SNRsxs * self.noise_stdsxs)**2) / \
+                    np.sum((self.SNRsxs * self.noise_stdsxs)**2) // \
                     sum(self.SNRsxs)**2
             if self.bw < 0: flip = -1   #u in si.splprep has to be increasing...
             else: flip = 1
@@ -146,7 +146,7 @@ class DataPortrait(DataPortrait):
                     quiet=int(quiet))
             if max_nbreak is not None and len(np.unique(tck[0])) > max_nbreak:
                 if max_nbreak < 2:
-                    print "max_nbreak not >= 2; setting max_nbreak = 2..."
+                    print("max_nbreak not >= 2; setting max_nbreak = 2...")
                     max_nbreak = 2
                 if max_nbreak == 2: s = np.inf
                 (tck,u), fp, ier, msg = si.splprep(proj_port[::flip].T,
@@ -155,8 +155,8 @@ class DataPortrait(DataPortrait):
                         nest=max_nbreak+(k*2), per=0, quiet=int(quiet))
 
             if ier > 1: #Will also catch when ier == "unknown"
-                print "Something went wrong in si.splprep for %s:\n%s"%(
-                        self.source, msg)
+                print("Something went wrong in si.splprep for %s:\n%s"%(
+                        self.source, msg))
 
         #Build model
         if ncomp != 0:
@@ -197,11 +197,11 @@ class DataPortrait(DataPortrait):
 
         if not quiet:
             if proj_port.sum():
-                print "B-spline interpolation model %s uses %d basis profile components and %d breakpoints (%d B-splines with k=%d)."%(self.model_name, ncomp,
+                print("B-spline interpolation model %s uses %d basis profile components and %d breakpoints (%d B-splines with k=%d)."%(self.model_name, ncomp,
                         len(np.unique(self.tck[0])),
-                        len(self.tck[0])-self.tck[2]-1, self.tck[2])
+                        len(self.tck[0])-self.tck[2]-1, self.tck[2]))
             else:
-                print "B-spline interpolation model %s uses 0 basis profile components; it returns the average profile."%(self.model_name)
+                print("B-spline interpolation model %s uses 0 basis profile components; it returns the average profile."%(self.model_name))
 
     def write_model(self, outfile, quiet=False):
         """
@@ -229,7 +229,7 @@ class DataPortrait(DataPortrait):
 
         of.close()
         if not quiet:
-            print "Wrote modelfile %s."%outfile
+            print("Wrote modelfile %s."%outfile)
 
     def show_eigenprofiles(self, ncomp=None, title=None, **kwargs):
         """
@@ -272,7 +272,7 @@ class DataPortrait(DataPortrait):
         if ncomp is None: ncomp = self.ncomp
         if ncomp:
             show_spline_curve_projections(self.proj_port, self.tck,
-                    self.freqsxs[0], self.SNRsxs / np.sum(self.SNRsxs),
+                    self.freqsxs[0], self.SNRsxs // np.sum(self.SNRsxs),
                     ncoord=ncomp, title=title, **kwargs)
 
 
@@ -340,9 +340,9 @@ if __name__ == "__main__":
     (options, args) = parser.parse_args()
 
     if (options.datafile is None):
-        print "\nppspline.py - make a pulse portrait model using PCA & B-spline interpolation\n"
+        print("\nppspline.py - make a pulse portrait model using PCA & B-spline interpolation\n")
         parser.print_help()
-        print ""
+        print("")
         parser.exit()
 
     datafile = options.datafile
